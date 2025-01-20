@@ -10,13 +10,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "startRecording") {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs.length > 0) {
-        console.log("Active tab found, executing script to start recording...");
         injectLogCaptureScript(tabs[0].id);
         startScreenRecording();
       }
     });
   } else if (message.type === "stopRecording") {
-    console.log("Stopping recording...");
     if (mediaRecorder) {
       mediaRecorder.stop();
       console.log("Recording stopped.");
@@ -31,31 +29,25 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log(`Screenshot saved. Use the key: ${screenshotKey}`);
         console.log("To retrieve the URL, run this in the console:");
         console.log(`chrome.storage.local.get("${screenshotKey}", console.log)`);
-    
+
         // Open the screenshot in a new tab
-        chrome.tabs.create({
-          url: screenshotUrl,
-        });
+        chrome.tabs.create({ url: screenshotUrl });
       });
     });
-    
+  } else if (message.type === "recordingBlobUrl") {
+    console.log("Video Blob URL:", message.blobUrl);
+
+    // Store the Blob URL for later use
+    chrome.storage.local.set({ videoBlobUrl: message.blobUrl }, () => {
+      console.log("Video Blob URL saved.");
+    });
+
+    // Open the video in a new tab
+    chrome.tabs.create({ url: message.blobUrl });
   } else if (message.type === "captureConsoleLog") {
     consoleLogs.push(message.log);
   } else if (message.type === "captureNetworkLog") {
     networkLogs.push({ url: message.url, status: message.status });
-  } else if (message.type === "videoReady") {
-    const blob = message.blob;
-    const videoUrl = URL.createObjectURL(blob);
-
-    console.log("Video Blob URL:", videoUrl); // Log the Blob URL
-    chrome.storage.local.set({ videoUrl }, () => {
-      console.log("Video URL stored in storage.");
-    });
-
-    // Open the video in a new tab
-    chrome.tabs.create({
-      url: videoUrl,
-    });
   }
 });
 
@@ -79,9 +71,8 @@ function startScreenRecording() {
 
               mediaRecorder.onstop = () => {
                 const blob = new Blob(recordedChunks, { type: "video/webm" });
-                const videoUrl = URL.createObjectURL(blob);
-
-                chrome.runtime.sendMessage({ type: "videoReady", blob });
+                const blobUrl = URL.createObjectURL(blob);
+                chrome.runtime.sendMessage({ type: "recordingBlobUrl", blobUrl });
               };
 
               mediaRecorder.start();
@@ -99,7 +90,7 @@ function startScreenRecording() {
 // Inject script to capture console logs and network logs
 function injectLogCaptureScript(tabId) {
   chrome.scripting.executeScript({
-    target: { tabId: tabId },
+    target: { tabId },
     func: () => {
       // Capture console logs
       const originalConsoleLog = console.log;
