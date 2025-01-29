@@ -3,9 +3,21 @@
   "name": "Screen screenshot and Recorder with audio",
   "version": "1.0",
   "description": "Screen screenshot and Recorder with audio, also capture console.log and network tabs logs",
-  "permissions": ["tabs", "activeTab", "scripting", "storage"],
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting",
+    "storage",
+    "debugger",
+    "downloads",
+    "sidePanel",
+     "clipboardWrite"
+  ],
   "background": {
     "service_worker": "background.js"
+  },
+  "side_panel": {
+    "default_path": "sidepanel.html"
   },
   "action": {
     "default_popup": "popup/popup.html",
@@ -15,12 +27,22 @@
       "128": "icons/icon-128.png"
     }
   },
-  "host_permissions": ["<all_urls>"],
+  "host_permissions": [
+    "<all_urls>",
+    "http://*/*",
+    "https://*/*"
+  ],
   "web_accessible_resources": [
     {
-      "resources": ["popup/upload.js"],
-      "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "resources": [
+        "popup/upload.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "scripts/content.js"
+      ]
     }
   ]
 }

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Bug Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: 90%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        h1 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .branding {
+            font-size: 14px;
+            color: #007bff;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .instructions {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+
+        .progress {
+            width: 100%;
+            background-color: #ddd;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background-color: #4caf50;
+            transition: width 0.2s ease-in-out;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 10px;
+            margin: 0 5px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .start {
+            background-color: #4caf50;
+            color: white;
+        }
+
+        .start:hover {
+            background-color: #45a049;
+        }
+
+        .stop {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .stop:hover {
+            background-color: #e53935;
+        }
+
+        .stop:disabled {
+            background-color: #ddd;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        textarea {
+            width: 100%;
+            flex-grow: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: none;
+            margin-bottom: 10px;
+        }
+
+        .secondary-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .secondary-buttons button {
+            flex: 1;
+            padding: 10px;
+            margin: 0 5px;
+            font-size: 14px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .secondary-buttons button:hover {
+            background-color: #0056b3;
+        }
+
+        .info {
+            font-size: 14px;
+            color: #555;
+            margin-top: 20px;
+        }
+
+        .recording-summary {
+            font-size: 14px;
+            color: #333;
+            margin-top: 10px;
+        }
+
+        .download-links {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .download-links a {
+            display: block;
+            margin: 5px 0;
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .download-links a:hover {
+            text-decoration: underline;
+        }
+
+        .warning-message {
+            color: #d9534f;
+            font-size: 14px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .upgrade-button {
+            margin-top: 10px;
+            background-color: #f0ad4e;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .upgrade-button:hover {
+            background-color: #ec971f;
+        }
+
+        .upgrade-message {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Bug Report</h1>
+        <p class="branding">Powered by Clearfundae AI</p>
+        <p class="instructions">Use the buttons below to start and stop screen sharing. After stopping, you can download your recording and debug logs.</p>
+        <p class="disclaimer">We do not save your recordings. Please download the video immediately after the screen share ends.</p>
+        <div class="progress">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <textarea id="notes" placeholder="AI-generated bug report will be created after recording is completed."></textarea>
+        <div class="button-row">
+            <button class="start" id="startButton" title="Click to begin recording your screen. Each session is limited to 5 minutes.">Start Recording Screen Share</button>
+            <button class="stop" id="stopButton" disabled title="Click to stop the recording. Links to download files will appear.">Stop and Save Recording</button>
+        </div>
+        <p class="warning-message" id="warningMessage">Oops! You've reached the maximum number of recordings for unpaid users.</p>
+        <div id="upgradeSection">
+            <button id="upgradeButton" class="upgrade-button">Upgrade to Pro for $5 and Get 100 Videos!</button>
+            <p class="upgrade-message">Email <strong>hirday@clearfundae.com</strong> to activate your Pro plan and enjoy extended features!</p>
+        </div>
+        <div class="download-links" id="downloadLinks" style="display: none;">
+            <a href="#" id="downloadScreenShare">Download Recorded Screen Share</a>
+            <a href="#" id="downloadDebugLog">Download Debug Log</a>
+        </div>
+        <div class="secondary-buttons">
+            <button id="sendToJira">Send To Jira</button>
+            <button id="copyButton">Copy</button>
+        </div>
+        <p class="info" id="recordingInfo"></p>
+        <p class="recording-summary" id="recordingSummary"></p>
+    </div>
+
+    <script>
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const sendToJiraButton = document.getElementById('sendToJira');
+        const copyButton = document.getElementById('copyButton');
+        const notes = document.getElementById('notes');
+        const recordingInfo = document.getElementById('recordingInfo');
+        const recordingSummary = document.getElementById('recordingSummary');
+        const downloadLinks = document.getElementById('downloadLinks');
+        const downloadScreenShare = document.getElementById('downloadScreenShare');
+        const downloadDebugLog = document.getElementById('downloadDebugLog');
+        const warningMessage = document.getElementById('warningMessage');
+        const upgradeButton = document.getElementById('upgradeButton');
+        const progressBar = document.getElementById('progressBar');
+
+        let recordingTimer;
+        let progressInterval;
+        let recordingCount = 0;
+        const maxRecordings = 3;
+        const maxRecordingTime = 300; // 5 minutes in seconds
+
+        updateRecordingSummary();
+
+        startButton.addEventListener('click', () => {
+            if (recordingCount >= maxRecordings) {
+                warningMessage.style.display = 'block';
+                document.getElementById('upgradeSection').style.display = 'block';
+                return;
+            }
+
+            warningMessage.style.display = 'none';
+            document.getElementById('upgradeSection').style.display = 'none';
+            notes.value = 'AI-generated bug report will be created after recording is completed.'; // Reset notes
+
+            stopButton.disabled = false;
+            startButton.disabled = true;
+            recordingCount++;
+            updateRecordingSummary();
+
+            let remainingTime = maxRecordingTime;
+            recordingInfo.textContent = `Recording in progress. Time remaining: ${remainingTime} seconds.`;
+
+            // Start progress bar animation
+            progressBar.style.width = '0%';
+            let elapsed = 0;
+            progressInterval = setInterval(() => {
+                elapsed += 1;
+                progressBar.style.width = `${(elapsed / maxRecordingTime) * 100}%`;
+            }, 1000);
+
+            recordingTimer = setInterval(() => {
+                remainingTime--;
+                if (remainingTime > 0) {
+                    recordingInfo.textContent = `Recording in progress. Time remaining: ${remainingTime} seconds.`;
+                } else {
+                    clearInterval(recordingTimer);
+                    stopRecording();
+                }
+            }, 1000);
+        });
+
+        stopButton.addEventListener('click', () => {
+            notes.value = `*Title:* Job Search Website - Filter Functionality Not Working for Registered Nurse Jobs\n\n*Environment:* \n- Platform: Web\n- Browser: Not specified\n- User Profile: Not specified\n\n*Precondition:* \n- User is on the job search website displaying registered nurse job postings.\n\n*Steps to Reproduce:\n1. Navigate to the job search website.\n2. Observe the list of registered nurse jobs displayed on the homepage.\n3. Attempt to filter the job postings by location, company, or other criteria using the provided filter options.\n4. Click on the \"View\" or \"Apply\" button for any job posting.\n\n*Expected Result:* \n- The job postings should be filtered according to the selected criteria, and the relevant job listings should be displayed accordingly.\n\n*Actual Result:* \n- The filter functionality does not work as expected, and the job postings remain unchanged regardless of the selected filter criteria.\n\n*Additional Notes:* \n- The website is easy to navigate and provides a comprehensive list of registered nurse jobs, but the filtering feature is not functioning properly.\n\n*Attachments:* \n- Video/screenshots of the issue (if available).`;
+            stopRecording();
+            downloadLinks.style.display = 'block';
+        });
+
+        sendToJiraButton.addEventListener('click', () => {
+            alert('Sending to Jira: ' + notes.value);
+        });
+
+        copyButton.addEventListener('click', () => {
+            notes.select();
+            document.execCommand('copy');
+            alert('Copied to clipboard');
+        });
+
+        function stopRecording() {
+            clearInterval(recordingTimer);
+            clearInterval(progressInterval);
+            progressBar.style.width = '0%';
+            recordingInfo.textContent = '';
+            stopButton.disabled = true;
+            startButton.disabled = false;
+        }
+
+        function updateRecordingSummary() {
+            recordingSummary.textContent = `Recordings done: ${recordingCount}/${maxRecordings}.`;
+        }
+
+        downloadScreenShare.href = 'path/to/recorded_screenshare.mp4';
+        downloadScreenShare.download = 'Recorded_Screen_Share.mp4';
+
+        downloadDebugLog.href = 'path/to/debug_log.txt';
+        downloadDebugLog.download = 'Debug_Log.txt';
+    </script>
+</body>
+</html>
