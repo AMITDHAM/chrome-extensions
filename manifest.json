@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Screen screenshot and Recorder with audio",
+  "name": "Screen Screenshot and Recorder with Audio",
   "version": "1.0",
   "description": "Screen screenshot and Recorder with audio, also capture console.log and network tabs logs",
   "permissions": [
@@ -11,7 +11,16 @@
     "debugger",
     "downloads",
     "sidePanel",
-     "clipboardWrite"
+    "clipboardWrite",
+    "desktopCapture",
+    "tabCapture",
+    "webRequest",
+    "offscreen"
+  ],
+  "host_permissions": [
+    "<all_urls>",
+    "http://*/",
+    "https://*/"
   ],
   "background": {
     "service_worker": "background.js"
@@ -20,29 +29,28 @@
     "default_path": "sidepanel.html"
   },
   "action": {
-    "default_popup": "popup/popup.html",
+    "default_title": "Click to open side panel",
     "default_icon": {
       "16": "icons/icon-16.png",
       "48": "icons/icon-48.png",
       "128": "icons/icon-128.png"
     }
   },
-  "host_permissions": [
-    "<all_urls>",
-    "http://*/*",
-    "https://*/*"
-  ],
   "web_accessible_resources": [
     {
       "resources": [
-        "popup/upload.js"
-      ],
-      "matches": [
-        "<all_urls>"
-      ],
-      "js": [
+        "popup/upload.js",
         "scripts/content.js"
-      ]
+      ],
+      "matches": ["<all_urls>"]
     }
-  ]
+  ],
+  "content_scripts": [
+    {
+        "matches": ["<all_urls>"],
+        "js": ["scripts/content.js"],
+        "run_at": "document_start"
+    }
+]
+
 }
