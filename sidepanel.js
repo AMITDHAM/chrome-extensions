@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    
+
     function addListener(element, event, handler) {
         if (element) {
             element.addEventListener(event, handler);
@@ -39,11 +39,11 @@ document.addEventListener("DOMContentLoaded", () => {
             console.warn(`${event} listener not attached: Element missing`);
         }
     }
-    
+
     document.getElementById('startButton').addEventListener('click', async () => {
         chrome.runtime.sendMessage({ type: 'start-recording' });
     });
-    
+
     document.getElementById('stopButton').addEventListener('click', async () => {
         chrome.runtime.sendMessage({ type: 'stop-recording' });
     });
@@ -53,48 +53,42 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById('stopButton').disabled = !message.recording;
         }
     });
-    
+
     chrome.runtime.onMessage.addListener((message) => {
         if (message.type === 'video-recorded') {
             const downloadLink = document.getElementById('downloadScreenShare');
             downloadLink.href = message.videoUrl;
             downloadLink.download = 'recorded_video.mp4';
-    
+
             // Show the download section
             document.getElementById('downloadLinks').style.display = 'block';
         }
     });
-    
-document.getElementById('downloadDebugLog').addEventListener('click', () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs.length === 0) return;
 
-        chrome.tabs.sendMessage(tabs[0].id, { type: 'get-logs' }, (response) => {
-            if (response && response.logs) {
-                const blob = new Blob([response.logs], { type: 'text/plain' });
-                const logUrl = URL.createObjectURL(blob);
 
-                // Update the download link
-                const downloadLink = document.getElementById('downloadDebugLog');
-                downloadLink.href = logUrl;
-                downloadLink.download = 'debug_logs.txt';
-            }
-        });
-    });
-});
+    chrome.runtime.onMessage.addListener((message) => {
+        if (message.type === "debug-log-data") {
+            console.log("📥 Received log data in side panel");
 
-    
+            const blob = new Blob([message.logData], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
 
-    addListener(screenshotButton, "click", () => {
-        chrome.runtime.sendMessage({ action: "takeScreenshot" });
+            // Update download link in the UI
+            const downloadLink = document.getElementById("downloadDebugLog");
+            downloadLink.href = url;
+            downloadLink.download = "debug-log.txt";
+
+            // Show the download button
+            document.getElementById("downloadLinks").style.display = "block";
+        }
     });
 
-    addListener(sendToJiraButton, "click", () => {
-        chrome.runtime.sendMessage({ action: "sendToJira" });
-    });
-
-    addListener(copyButton, "click", () => {
-        chrome.runtime.sendMessage({ action: "copyApiData" });
+    chrome.runtime.onMessage.addListener((message) => {
+        if (message.type === 'video-uploaded') {
+            document.getElementById('notes').value = JSON.stringify(message.uploadResponse?.result, null, 2);
+        } else if (message.type === 'upload-error') {
+            document.getElementById('notes').value = `Upload Failed: ${message.error}`;
+        }
     });
 
     addListener(recordingTab, "click", () => {
@@ -115,8 +109,8 @@ document.getElementById('downloadDebugLog').addEventListener('click', () => {
         if (message.action === "recordingSaved") {
             const webmLink = document.createElement("a");
             webmLink.href = message.url;
-            webmLink.download = "recording.webm";
-            webmLink.textContent = "Download WebM";
+            webmLink.download = "recording.mp4";
+            webmLink.textContent = "Download MP4";
             downloadLinks.appendChild(webmLink);
             downloadLinks.appendChild(document.createElement("br"));
         } else if (message.action === "mp4Ready") {
